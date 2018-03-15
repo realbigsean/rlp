@@ -1,4 +1,5 @@
 // Copyright 2015-2017 Parity Technologies
+// Copyright 2019 Kodebox, Inc.
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -31,6 +32,8 @@ pub enum DecoderError {
 	/// Declared length is inconsistent with data specified after.
 	RlpInconsistentLengthAndData,
 	/// Declared length is invalid and results in overflow
+	/// A string MUST NOT be null terminated.
+	RlpNullTerminatedString,
 	RlpInvalidLength,
 	/// Custom rlp decoding error.
 	Custom(&'static str),
