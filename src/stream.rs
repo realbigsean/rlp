@@ -166,7 +166,7 @@ impl RlpStream {
     /// 	assert_eq!(out, vec![0xc2, 0x80, 0x80]);
     /// }
     /// ```
-    pub fn append_empty_data(&mut self) -> &mut RlpStream {
+    pub fn append_empty_data(&mut self) -> &mut Self {
         // self push raw item
         self.buffer.push(0x80);
 
@@ -175,6 +175,12 @@ impl RlpStream {
 
         // return chainable self
         self
+    }
+
+    /// Drain the object and return the underlying ElasticArray.
+    pub fn drain(self) -> ElasticArray1024<u8> {
+        assert!(self.is_finished());
+        self.buffer
     }
 
     /// Appends raw (pre-serialised) RLP data. Use with caution. Chainable.
@@ -309,12 +315,6 @@ impl RlpStream {
 
     pub fn encoder(&mut self) -> BasicEncoder {
         BasicEncoder::new(self)
-    }
-
-    /// Drain the object and return the underlying ElasticArray.
-    pub fn drain(self) -> ElasticArray1024<u8> {
-        assert!(self.is_finished());
-        self.buffer
     }
 
     /// Finalize current ubnbound list. Panics if no unbounded list has been opened.

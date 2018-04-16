@@ -237,9 +237,7 @@ where
     T: Decodable + fmt::Debug + cmp::Eq, {
     for t in &tests {
         let res: Result<T, DecoderError> = rlp::decode(&t.1);
-        assert!(res.is_ok());
-        let res = res.unwrap();
-        assert_eq!(&res, &t.0);
+        assert_eq!(res.as_ref(), Ok(&t.0));
     }
 }
 

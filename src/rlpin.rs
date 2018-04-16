@@ -439,7 +439,7 @@ impl<'a> BasicDecoder<'a> {
 #[cfg(test)]
 mod tests {
     use RlpStream;
-    use {DecoderError, Rlp};
+    use {DecoderError, Encodable, Rlp};
 
     #[test]
     fn rlp_display() {
@@ -460,6 +460,41 @@ mod tests {
                 got: usize::max_value()
             }),
             res
+        );
+    }
+
+    #[test]
+    fn at_overflow() {
+        let bs = vec![vec![1], vec![2, 3, 4], vec![3]].rlp_bytes();
+        let rlp = Rlp::new(&*bs);
+        let first_element: Result<Vec<u8>, _> = rlp.at(2).and_then(|elem| elem.as_val());
+        assert_eq!(Ok(vec![3]), first_element);
+
+        let fourth_element: Result<Vec<u8>, _> = rlp.at(3).and_then(|elem| elem.as_val());
+        assert_eq!(
+            Err(DecoderError::RlpIsTooShort {
+                expected: 7,
+                got: 6
+            }),
+            fourth_element
+        );
+    }
+
+    #[test]
+    fn invalid_length_rlp_at_overflow() {
+        // [1,2,3,4] with invalid byte length 3
+        let bs = [0xc3, 0x01, 0x02, 0x03, 0x04];
+        let rlp = Rlp::new(&bs);
+        let first_element: Result<u8, _> = rlp.at(2).and_then(|elem| elem.as_val());
+        assert_eq!(Ok(3), first_element);
+
+        let fourth_element: Result<u8, _> = rlp.at(3).and_then(|elem| elem.as_val());
+        assert_eq!(
+            Err(DecoderError::RlpIsTooShort {
+                expected: 4,
+                got: 3
+            }),
+            fourth_element
         );
     }
 

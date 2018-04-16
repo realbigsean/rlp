@@ -329,7 +329,7 @@ impl<T1: Encodable, T2: Encodable, T3: Encodable> Encodable for (T1, T2, T3) {
 }
 
 impl<T1: Decodable, T2: Decodable, T3: Decodable> Decodable for (T1, T2, T3) {
-    fn decode(rlp: &UntrustedRlp) -> Result<Self, DecoderError> {
+    fn decode(rlp: &Rlp) -> Result<Self, DecoderError> {
         let item_count = rlp.item_count()?;
         if item_count != 3 {
             return Err(DecoderError::RlpIncorrectListLen {
