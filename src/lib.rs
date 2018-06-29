@@ -65,7 +65,7 @@ pub const EMPTY_LIST_RLP: [u8; 1] = [0xC0; 1];
 /// fn main () {
 /// 	let data = vec![0x83, b'c', b'a', b't'];
 /// 	let animal: String = rlp::decode(&data).expect("could not decode");
-/// 	assert_eq!(animal, "cat".to_owned());
+/// 	assert_eq!(animal, "cat".to_string());
 /// }
 /// ```
 pub fn decode<T>(bytes: &[u8]) -> Result<T, DecoderError>
