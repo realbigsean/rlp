@@ -359,7 +359,7 @@ fn decode_untrusted_vector_str() {
 }
 
 #[test]
-fn test_rlp_data_length_check() {
+fn rlp_data_length_check() {
     let data = vec![0x84, b'c', b'a', b't'];
     let rlp = Rlp::new(&data);
 
@@ -368,7 +368,7 @@ fn test_rlp_data_length_check() {
 }
 
 #[test]
-fn test_rlp_long_data_length_check() {
+fn rlp_long_data_length_check() {
     let mut data: Vec<u8> = vec![0xb8, 255];
     for _ in 0..253 {
         data.push(b'c');
@@ -381,7 +381,7 @@ fn test_rlp_long_data_length_check() {
 }
 
 #[test]
-fn test_the_exact_long_string() {
+fn the_exact_long_string() {
     let mut data: Vec<u8> = vec![0xb8, 255];
     for _ in 0..255 {
         data.push(b'c');
@@ -394,7 +394,7 @@ fn test_the_exact_long_string() {
 }
 
 #[test]
-fn test_null_terminated_string() {
+fn null_terminated_string() {
     let data: Vec<u8> = vec![0x84, b'd', b'o', b'g', b'\0'];
     let rlp = Rlp::new(&data);
     let as_val: Result<String, DecoderError> = rlp.as_val();
@@ -402,7 +402,7 @@ fn test_null_terminated_string() {
 }
 
 #[test]
-fn test_rlp_2bytes_data_length_check() {
+fn rlp_2bytes_data_length_check() {
     let mut data: Vec<u8> = vec![0xb9, 2, 255]; // 512+255
     for _ in 0..700 {
         data.push(b'c');
@@ -415,7 +415,7 @@ fn test_rlp_2bytes_data_length_check() {
 }
 
 #[test]
-fn test_rlp_nested_empty_list_encode() {
+fn rlp_nested_empty_list_encode() {
     let mut stream = RlpStream::new_list(2);
     stream.append_list(&(Vec::new() as Vec<u32>));
     stream.append(&40u32);
@@ -423,7 +423,7 @@ fn test_rlp_nested_empty_list_encode() {
 }
 
 #[test]
-fn test_rlp_list_length_overflow() {
+fn rlp_list_length_overflow() {
     let data: Vec<u8> = vec![0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00];
     let rlp = Rlp::new(&data);
     let as_val: Result<String, DecoderError> = rlp.val_at(0);
@@ -431,7 +431,7 @@ fn test_rlp_list_length_overflow() {
 }
 
 #[test]
-fn test_rlp_stream_size_limit() {
+fn rlp_stream_size_limit() {
     for limit in 40..270 {
         let item = [0u8; 1];
         let mut stream = RlpStream::new();
@@ -441,7 +441,7 @@ fn test_rlp_stream_size_limit() {
 }
 
 #[test]
-fn test_rlp_stream_unbounded_list() {
+fn rlp_stream_unbounded_list() {
     let mut stream = RlpStream::new();
     stream.begin_unbounded_list();
     stream.append(&40u32);
