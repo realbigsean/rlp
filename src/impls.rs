@@ -7,6 +7,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use std::iter::{empty, once};
 use std::{cmp, mem, str};
 
 use primitives::{H128, H160, H256, H512, H520, U256};
@@ -38,11 +39,11 @@ pub fn decode_usize(bytes: &[u8]) -> Result<usize, DecoderError> {
 
 impl Encodable for bool {
     fn rlp_append(&self, s: &mut RlpStream) {
-        if *self {
-            s.encoder().encode_value(&[1]);
+        s.encoder().encode_iter(once(if *self {
+            1u8
         } else {
-            s.encoder().encode_value(&[0]);
-        }
+            0
+        }));
     }
 }
 
@@ -129,9 +130,9 @@ where
 impl Encodable for u8 {
     fn rlp_append(&self, s: &mut RlpStream) {
         if *self != 0 {
-            s.encoder().encode_value(&[*self]);
+            s.encoder().encode_iter(once(*self));
         } else {
-            s.encoder().encode_value(&[]);
+            s.encoder().encode_iter(empty());
         }
     }
 }

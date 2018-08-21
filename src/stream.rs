@@ -7,7 +7,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use elastic_array::{ElasticArray1024, ElasticArray16};
 use std::borrow::Borrow;
 use traits::Encodable;
 
@@ -30,8 +29,8 @@ impl ListInfo {
 
 /// Appendable rlp encoder.
 pub struct RlpStream {
-    unfinished_lists: ElasticArray16<ListInfo>,
-    buffer: ElasticArray1024<u8>,
+    unfinished_lists: Vec<ListInfo>,
+    buffer: Vec<u8>,
     finished_list: bool,
 }
 
@@ -45,8 +44,8 @@ impl RlpStream {
     /// Initializes instance of empty `Stream`.
     pub fn new() -> Self {
         RlpStream {
-            unfinished_lists: ElasticArray16::new(),
-            buffer: ElasticArray1024::new(),
+            unfinished_lists: Vec::with_capacity(16),
+            buffer: Vec::with_capacity(1024),
             finished_list: false,
         }
     }
@@ -76,6 +75,30 @@ impl RlpStream {
         E: Encodable, {
         self.finished_list = false;
         value.rlp_append(self);
+        if !self.finished_list {
+            self.note_appended(1);
+        }
+        self
+    }
+
+    /// Appends iterator to the end of stream, chainable.
+    ///
+    /// ```rust
+    /// extern crate rlp;
+    /// use rlp::*;
+    ///
+    /// fn main () {
+    ///     let mut stream = RlpStream::new_list(2);
+    ///     stream.append(&"cat").append_iter("dog".as_bytes().iter().cloned());
+    ///     let out = stream.out();
+    ///     assert_eq!(out, vec![0xc8, 0x83, b'c', b'a', b't', 0x83, b'd', b'o', b'g']);
+    /// }
+    /// ```
+    pub fn append_iter<I>(&mut self, value: I) -> &mut Self
+    where
+        I: IntoIterator<Item = u8>, {
+        self.finished_list = false;
+        self.encoder().encode_iter(value);
         if !self.finished_list {
             self.note_appended(1);
         }
@@ -177,8 +200,8 @@ impl RlpStream {
         self
     }
 
-    /// Drain the object and return the underlying ElasticArray.
-    pub fn drain(self) -> ElasticArray1024<u8> {
+    /// Drain the object and return the underlying Vec.
+    pub fn drain(self) -> Vec<u8> {
         assert!(self.is_finished());
         self.buffer
     }
@@ -186,7 +209,7 @@ impl RlpStream {
     /// Appends raw (pre-serialised) RLP data. Use with caution. Chainable.
     pub fn append_raw(&mut self, bytes: &[u8], item_count: usize) -> &mut RlpStream {
         // push raw items
-        self.buffer.append_slice(bytes);
+        self.buffer.extend_from_slice(bytes);
 
         // try to finish and prepend the length
         self.note_appended(item_count);
@@ -267,7 +290,7 @@ impl RlpStream {
     /// 	assert_eq!(out, vec![0xc8, 0x83, b'c', b'a', b't', 0x83, b'd', b'o', b'g']);
     /// }
     pub fn is_finished(&self) -> bool {
-        self.unfinished_lists.len() == 0
+        self.unfinished_lists.is_empty()
     }
 
     /// Get raw encoded bytes
@@ -281,13 +304,12 @@ impl RlpStream {
     /// panic! if stream is not finished.
     pub fn out(self) -> Vec<u8> {
         assert!(self.is_finished());
-        // self.encoder.out().into_vec()
-        self.buffer.into_vec()
+        self.buffer
     }
 
     /// Try to finish lists
     fn note_appended(&mut self, inserted_items: usize) {
-        if self.unfinished_lists.len() == 0 {
+        if self.unfinished_lists.is_empty() {
             return
         }
 
@@ -331,7 +353,7 @@ impl RlpStream {
 }
 
 pub struct BasicEncoder<'a> {
-    buffer: &'a mut ElasticArray1024<u8>,
+    buffer: &'a mut Vec<u8>,
 }
 
 impl<'a> BasicEncoder<'a> {
@@ -346,7 +368,11 @@ impl<'a> BasicEncoder<'a> {
         let leading_empty_bytes = size.leading_zeros() as usize / 8;
         let size_bytes = 4 - leading_empty_bytes as u8;
         let buffer: [u8; 4] = size.to_be_bytes();
-        self.buffer.insert_slice(position, &buffer[leading_empty_bytes..]);
+
+        assert!(position <= self.buffer.len());
+        self.buffer.extend_from_slice(&buffer[leading_empty_bytes..]);
+        self.buffer[position..].rotate_right(size_bytes as usize);
+
         size_bytes as u8
     }
 
@@ -366,15 +392,35 @@ impl<'a> BasicEncoder<'a> {
 
     /// Pushes encoded value to the end of buffer
     pub fn encode_value(&mut self, value: &[u8]) {
-        match value.len() {
+        self.encode_iter(value.iter().cloned());
+    }
+
+    pub fn encode_iter<I>(&mut self, value: I)
+    where
+        I: IntoIterator<Item = u8>, {
+        let mut value = value.into_iter();
+        let len = match value.size_hint() {
+            (lower, Some(upper)) if lower == upper => lower,
+            _ => {
+                let value = value.collect::<Vec<_>>();
+                return self.encode_iter(value)
+            }
+        };
+
+        match len {
             // just 0
             0 => self.buffer.push(0x80u8),
-            // byte is its own encoding if < 0x80
-            1 if value[0] < 0x80 => self.buffer.push(value[0]),
-            // (prefix + length), followed by the string
             len @ 1..=55 => {
-                self.buffer.push(0x80u8 + len as u8);
-                self.buffer.append_slice(value);
+                let first = value.next().expect("iterator length is higher than 1");
+                if len == 1 && first < 0x80 {
+                    // byte is its own encoding if < 0x80
+                    self.buffer.push(first);
+                } else {
+                    // (prefix + length), followed by the string
+                    self.buffer.push(0x80u8 + len as u8);
+                    self.buffer.push(first);
+                    self.buffer.extend(value);
+                }
             }
             // (prefix + length of length), followed by the length, followd by the string
             len => {
@@ -382,7 +428,7 @@ impl<'a> BasicEncoder<'a> {
                 let position = self.buffer.len();
                 let inserted_bytes = self.insert_size(len, position);
                 self.buffer[position - 1] = 0xb7 + inserted_bytes;
-                self.buffer.append_slice(value);
+                self.buffer.extend(value);
             }
         }
     }

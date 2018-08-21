@@ -33,7 +33,6 @@
 //! * You want to get view onto rlp-slice.
 //! * You don't want to decode whole rlp at once.
 
-extern crate elastic_array;
 extern crate primitives;
 extern crate rustc_hex;
 
@@ -43,7 +42,6 @@ mod rlpin;
 mod stream;
 mod traits;
 
-use elastic_array::ElasticArray1024;
 use std::borrow::Borrow;
 
 pub use error::DecoderError;
@@ -88,11 +86,11 @@ where
 ///
 /// fn main () {
 /// 	let animal = "cat";
-/// 	let out = rlp::encode(&animal).into_vec();
+/// 	let out = rlp::encode(&animal);
 /// 	assert_eq!(out, vec![0x83, b'c', b'a', b't']);
 /// }
 /// ```
-pub fn encode<E>(object: &E) -> ElasticArray1024<u8>
+pub fn encode<E>(object: &E) -> Vec<u8>
 where
     E: Encodable, {
     let mut stream = RlpStream::new();
@@ -100,7 +98,7 @@ where
     stream.drain()
 }
 
-pub fn encode_list<E, K>(object: &[K]) -> ElasticArray1024<u8>
+pub fn encode_list<E, K>(object: &[K]) -> Vec<u8>
 where
     E: Encodable,
     K: Borrow<E>, {
