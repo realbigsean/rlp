@@ -128,10 +128,12 @@ impl<'a> fmt::Display for Rlp<'a> {
             Ok(Prototype::Data(_)) => write!(f, "\"0x{}\"", self.data().unwrap().to_hex()),
             Ok(Prototype::List(len)) => {
                 write!(f, "[")?;
-                for i in 0..len - 1 {
-                    write!(f, "{}, ", self.at(i).unwrap())?;
+                if len > 0 {
+                    for i in 0..len - 1 {
+                        write!(f, "{}, ", self.at(i).unwrap())?;
+                    }
+                    write!(f, "{}", self.at(len - 1).unwrap())?;
                 }
-                write!(f, "{}", self.at(len - 1).unwrap())?;
                 write!(f, "]")
             }
             Err(err) => write!(f, "{:?}", err),
@@ -408,6 +410,7 @@ impl<'a> BasicDecoder<'a> {
 
 #[cfg(test)]
 mod tests {
+    use RlpStream;
     use {DecoderError, Rlp};
 
     #[test]
@@ -424,5 +427,17 @@ mod tests {
         let rlp = Rlp::new(&bs);
         let res: Result<u8, DecoderError> = rlp.as_val();
         assert_eq!(Err(DecoderError::RlpInvalidLength), res);
+    }
+
+    #[test]
+    fn print_empty_array() {
+        let mut s = RlpStream::new();
+        let num: u8 = 3;
+        let empty_array: Vec<u32> = Vec::new();
+        s.begin_list(2).append(&num).append_list(&empty_array);
+        let bs = s.out();
+        let rlp = Rlp::new(&*bs);
+        let s = format!("{}", rlp);
+        assert_eq!("[\"0x03\", []]", s);
     }
 }
