@@ -396,15 +396,13 @@ mod tests {
     #[test]
     #[ignore]
     fn append_more_than_expected() {
-        let s = {
+        let mut s = {
             let mut s = RlpStream::new_list(1);
             s.append(&1u32);
             s
         };
-        let must_fail = ::std::panic::catch_unwind(|| {
-            (|mut s: RlpStream| {
-                s.append(&2u32);
-            })(s)
+        let must_fail = ::std::panic::catch_unwind(move || {
+            s.append(&2u32);
         });
         assert!(must_fail.is_err());
     }
