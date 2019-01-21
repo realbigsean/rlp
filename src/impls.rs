@@ -9,7 +9,6 @@
 
 use std::{cmp, mem, str};
 
-use byteorder::{BigEndian, ByteOrder};
 use primitives::{H128, H160, H256, H512, H520, U256};
 
 use super::stream::RlpStream;
@@ -143,8 +142,7 @@ macro_rules! impl_encodable_for_u {
         impl Encodable for $name {
             fn rlp_append(&self, s: &mut RlpStream) {
                 let leading_empty_bytes = self.leading_zeros() as usize / 8;
-                let mut buffer = [0u8; $size];
-                BigEndian::$func(&mut buffer, *self);
+                let buffer: [u8; $size] = self.to_be_bytes();
                 s.encoder().encode_value(&buffer[leading_empty_bytes..]);
             }
         }
