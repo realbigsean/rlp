@@ -221,6 +221,18 @@ where
         // skip up to x items
         bytes = Rlp::consume_items(bytes, to_skip)?;
 
+        let payload_info = self.payload_info()?;
+        let offset_max = payload_info.header_len + payload_info.value_len - 1;
+        let new_offset = self.bytes.len() - bytes.len();
+        // self.data.len() can be greater than byte length from payload's length
+        // But you should not read the data which is lied after payload's length
+        if new_offset > offset_max {
+            return Err(DecoderError::RlpIsTooShort {
+                expected: new_offset,
+                got: offset_max,
+            })
+        }
+
         // update the cache
         self.offset_cache.set(OffsetCache::new(index, self.bytes.len() - bytes.len()));
 
