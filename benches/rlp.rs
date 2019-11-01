@@ -14,12 +14,12 @@
 
 #![feature(test)]
 
+extern crate primitives;
 extern crate test;
-extern crate ethcore_bigint as bigint;
 extern crate rlp;
 
 use test::Bencher;
-use bigint::prelude::U256;
+use primitives::U256;
 use rlp::{RlpStream, Rlp};
 
 #[bench]

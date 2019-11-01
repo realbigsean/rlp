@@ -1,4 +1,5 @@
 // Copyright 2015-2017 Parity Technologies
+// Copyright 2019 Kodebox, Inc.
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -6,11 +7,11 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-extern crate ethereum_types as bigint;
+extern crate primitives;
 extern crate rlp;
 
 use std::{fmt, cmp};
-use bigint::{U256, H160};
+use primitives::{U256, H160};
 use rlp::{Encodable, Decodable, Rlp, RlpStream, DecoderError};
 
 #[test]

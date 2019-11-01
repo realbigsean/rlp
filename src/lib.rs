@@ -1,4 +1,5 @@
 // Copyright 2015-2017 Parity Technologies
+// Copyright 2019 Kodebox, Inc.
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -33,8 +34,8 @@
 //! * You don't want to decode whole rlp at once.
 
 extern crate byteorder;
-extern crate ethereum_types as bigint;
 extern crate elastic_array;
+extern crate primitives;
 extern crate rustc_hex;
 
 mod traits;
