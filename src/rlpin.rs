@@ -41,6 +41,7 @@ pub enum Prototype {
 }
 
 /// Stores basic information about item
+#[derive(Debug)]
 pub struct PayloadInfo {
     /// Header length in bytes
     pub header_len: usize,
@@ -67,6 +68,9 @@ fn calculate_payload_info(header_bytes: &[u8], len_of_len: usize) -> Result<Payl
         })
     }
     let value_len = decode_usize(&header_bytes[1..header_len])?;
+    if value_len <= 55 {
+        return Err(DecoderError::RlpInvalidIndirection)
+    }
     Ok(PayloadInfo::new(header_len, value_len))
 }
 
@@ -114,7 +118,7 @@ impl PayloadInfo {
 #[derive(Debug)]
 pub struct Rlp<'a> {
     bytes: &'a [u8],
-    offset_cache: Cell<OffsetCache>,
+    offset_cache: Cell<Option<OffsetCache>>,
     count_cache: Cell<Option<usize>>,
 }
 
@@ -155,7 +159,7 @@ where
     pub fn new(bytes: &'a [u8]) -> Rlp<'a> {
         Rlp {
             bytes,
-            offset_cache: Cell::new(OffsetCache::new(usize::max_value(), 0)),
+            offset_cache: Cell::new(None),
             count_cache: Cell::new(None),
         }
     }
@@ -210,20 +214,23 @@ where
 
         // move to cached position if its index is less or equal to
         // current search index, otherwise move to beginning of list
-        let c = self.offset_cache.get();
-
-        let (mut bytes, to_skip) = if c.index <= index {
-            (Rlp::consume(self.bytes, c.offset)?, index - c.index)
-        } else {
-            (self.consume_list_payload()?, index)
+        let cache = self.offset_cache.get();
+        let (bytes, indexes_to_skip, bytes_consumed) = match cache {
+            Some(ref cache) if cache.index <= index => {
+                (Rlp::consume(self.bytes, cache.offset)?, index - cache.index, cache.offset)
+            }
+            Some(_) | None => {
+                let (bytes, consumed) = self.consume_list_payload()?;
+                (bytes, index, consumed)
+            }
         };
 
         // skip up to x items
-        bytes = Rlp::consume_items(bytes, to_skip)?;
+        let (bytes, consumed) = Rlp::consume_items(bytes, indexes_to_skip)?;
 
         let payload_info = self.payload_info()?;
         let offset_max = payload_info.header_len + payload_info.value_len - 1;
-        let new_offset = self.bytes.len() - bytes.len();
+        let new_offset = bytes_consumed + consumed;
         // self.data.len() can be greater than byte length from payload's length
         // But you should not read the data which is lied after payload's length
         if new_offset > offset_max {
@@ -234,7 +241,7 @@ where
         }
 
         // update the cache
-        self.offset_cache.set(OffsetCache::new(index, self.bytes.len() - bytes.len()));
+        self.offset_cache.set(Some(OffsetCache::new(index, new_offset)));
 
         // construct new rlp
         let found = BasicDecoder::payload_info(bytes)?;
@@ -265,7 +272,10 @@ where
         match self.bytes[0] {
             0..=0x80 => true,
             0x81..=0xb7 => self.bytes[1] != 0,
-            b @ 0xb8..=0xbf => self.bytes[1 + b as usize - 0xb7] != 0,
+            b @ 0xb8..=0xbf => {
+                let payload_idx = 1 + b as usize - 0xb7;
+                payload_idx < self.bytes.len() && self.bytes[payload_idx] != 0
+            }
             _ => false,
         }
     }
@@ -303,20 +313,29 @@ where
     }
 
     /// consumes first found prefix
-    fn consume_list_payload(&self) -> Result<&'a [u8], DecoderError> {
+    fn consume_list_payload(&self) -> Result<(&'a [u8], usize), DecoderError> {
         let item = BasicDecoder::payload_info(self.bytes)?;
-        let bytes = Rlp::consume(self.bytes, item.header_len)?;
-        Ok(bytes)
+        let expected = item.header_len + item.value_len;
+        if self.bytes.len() < expected {
+            return Err(DecoderError::RlpIsTooShort {
+                expected,
+                got: self.bytes.len(),
+            })
+        }
+        Ok((&self.bytes[item.header_len..item.header_len + item.value_len], item.header_len))
     }
 
     /// consumes fixed number of items
-    fn consume_items(bytes: &'a [u8], items: usize) -> Result<&'a [u8], DecoderError> {
+    fn consume_items(bytes: &'a [u8], items: usize) -> Result<(&'a [u8], usize), DecoderError> {
         let mut result = bytes;
+        let mut consumed = 0;
         for _ in 0..items {
             let i = BasicDecoder::payload_info(result)?;
-            result = Rlp::consume(result, i.header_len + i.value_len)?;
+            let to_consume = i.header_len + i.value_len;
+            result = Rlp::consume(result, to_consume)?;
+            consumed += to_consume;
         }
-        Ok(result)
+        Ok((result, consumed))
     }
 
 

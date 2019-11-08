@@ -326,6 +326,7 @@ impl RlpStream {
         let len = self.buffer.len() - list.position;
         self.encoder().insert_list_payload(len, list.position);
         self.note_appended(1);
+        self.finished_list = true;
     }
 }
 
