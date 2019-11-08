@@ -1,4 +1,4 @@
-# RLP
+# RLP [![Build Status](https://travis-ci.com/CodeChain-io/rlp.svg?branch=master)](https://travis-ci.com/CodeChain-io/rlp)
 
 Recursive-length-prefix encoding, decoding, and compression in Rust.
 
