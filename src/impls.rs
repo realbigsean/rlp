@@ -151,11 +151,11 @@ impl Decodable for u8 {
 }
 
 macro_rules! impl_encodable_for_u {
-    ($name: ident, $size: expr) => {
+    ($name: ident) => {
         impl Encodable for $name {
             fn rlp_append(&self, s: &mut RlpStream) {
                 let leading_empty_bytes = self.leading_zeros() as usize / 8;
-                let buffer: [u8; $size] = self.to_be_bytes();
+                let buffer = self.to_be_bytes();
                 s.encoder().encode_value(&buffer[leading_empty_bytes..]);
             }
         }
@@ -189,10 +189,10 @@ macro_rules! impl_decodable_for_u {
     };
 }
 
-impl_encodable_for_u!(u16, 2);
-impl_encodable_for_u!(u32, 4);
-impl_encodable_for_u!(u64, 8);
-impl_encodable_for_u!(u128, 16);
+impl_encodable_for_u!(u16);
+impl_encodable_for_u!(u32);
+impl_encodable_for_u!(u64);
+impl_encodable_for_u!(u128);
 
 impl_decodable_for_u!(u16);
 impl_decodable_for_u!(u32);
