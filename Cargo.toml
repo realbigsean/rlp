@@ -3,7 +3,7 @@ description = "Recursive-length prefix encoding, decoding, and compression"
 repository = "https://github.com/CodeChain-io/rlp"
 license = "MIT/Apache-2.0"
 name = "rlp"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["CodeChain Team <hi@codechain.io>", "Parity Technologies <admin@parity.io>"]
 
 [dependencies]
