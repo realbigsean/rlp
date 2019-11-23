@@ -7,11 +7,13 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use impls::decode_usize;
-use rustc_hex::ToHex;
 use std::cell::Cell;
 use std::fmt;
-use {Decodable, DecoderError};
+
+use rustc_hex::ToHex;
+
+use super::impls::decode_usize;
+use super::{Decodable, DecoderError};
 
 /// rlp offset
 #[derive(Copy, Clone, Debug)]
@@ -469,8 +471,9 @@ impl<'a> BasicDecoder<'a> {
 
 #[cfg(test)]
 mod tests {
-    use RlpStream;
-    use {DecoderError, Encodable, Rlp};
+    use crate::{Encodable, Rlp, RlpStream};
+
+    use super::*;
 
     #[test]
     fn rlp_display() {

@@ -364,7 +364,7 @@ mod tests {
     fn vec_of_bytes() {
         let origin: Vec<Vec<u8>> = vec![vec![0, 1, 2, 3, 4], vec![5, 6, 7], vec![], vec![8, 9]];
 
-        let encoded = ::encode(&origin);
+        let encoded = crate::encode(&origin);
 
         let expected = {
             let mut s = RlpStream::new();

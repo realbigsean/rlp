@@ -8,7 +8,7 @@
 // except according to those terms.
 
 //! Common RLP traits
-use {DecoderError, Rlp, RlpStream};
+use super::{DecoderError, Rlp, RlpStream};
 
 /// RLP decodable trait
 pub trait Decodable: Sized {

@@ -8,7 +8,8 @@
 // except according to those terms.
 
 use std::borrow::Borrow;
-use traits::Encodable;
+
+use super::traits::Encodable;
 
 #[derive(Debug, Copy, Clone)]
 struct ListInfo {
