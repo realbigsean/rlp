@@ -32,6 +32,7 @@ struct FooWrapper {
 
 #[test]
 fn test_encode_foo() {
+    #[allow(clippy::blacklisted_name)]
     let foo = Foo {
         a: "cat".into(),
     };
@@ -46,6 +47,7 @@ fn test_encode_foo() {
 
 #[test]
 fn test_encode_foo_wrapper() {
+    #[allow(clippy::blacklisted_name)]
     let foo = FooWrapper {
         a: "cat".into(),
     };
