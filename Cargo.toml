@@ -1,4 +1,6 @@
 [workspace]                                                                                                              
 members = [                                                                                                              
-    "rlp"
+    "rlp",
+    "rlp-compress",
+    "rlp-derive"
 ]
