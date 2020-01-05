@@ -9,6 +9,7 @@
 //! Contains RLPs used for compression.
 
 use crate::Swapper;
+use lazy_static::lazy_static;
 
 lazy_static! {
     /// Swapper for snapshot compression.

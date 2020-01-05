@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity Ethereum.  If not, see <http://www.gnu.org/licenses/>.
 
-extern crate rlp_compress;
-
 use rlp_compress::{blocks_swapper, compress, decompress, snapshot_swapper, Compressor, Decompressor, Swapper};
 
 #[test]

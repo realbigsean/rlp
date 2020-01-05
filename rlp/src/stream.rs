@@ -1,5 +1,5 @@
 // Copyright 2015-2017 Parity Technologies
-// Copyright 2019 Kodebox, Inc.
+// Copyright 2019-2020 Kodebox, Inc.
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -61,7 +61,6 @@ impl RlpStream {
     /// Appends value to the end of stream, chainable.
     ///
     /// ```rust
-    /// extern crate rlp;
     /// use rlp::*;
     ///
     /// fn main () {
@@ -85,7 +84,6 @@ impl RlpStream {
     /// Appends iterator to the end of stream, chainable.
     ///
     /// ```rust
-    /// extern crate rlp;
     /// use rlp::*;
     ///
     /// fn main () {
@@ -130,7 +128,6 @@ impl RlpStream {
     /// Declare appending the list of given size, chainable.
     ///
     /// ```rust
-    /// extern crate rlp;
     /// use rlp::*;
     ///
     /// fn main () {
@@ -180,7 +177,6 @@ impl RlpStream {
     /// Apends null to the end of stream, chainable.
     ///
     /// ```rust
-    /// extern crate rlp;
     /// use rlp::*;
     ///
     /// fn main () {
@@ -256,7 +252,6 @@ impl RlpStream {
     /// Clear the output stream so far.
     ///
     /// ```rust
-    /// extern crate rlp;
     /// use rlp::*;
     ///
     /// fn main () {
@@ -278,7 +273,6 @@ impl RlpStream {
     /// Returns true if stream doesnt expect any more items.
     ///
     /// ```rust
-    /// extern crate rlp;
     /// use rlp::*;
     ///
     /// fn main () {

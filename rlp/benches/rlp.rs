@@ -1,5 +1,5 @@
 // Copyright 2015-2017 Parity Technologies
-// Copyright 2019 Kodebox, Inc.
+// Copyright 2019-2020 Kodebox, Inc.
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -15,8 +15,6 @@
 
 #![feature(test)]
 
-extern crate primitives;
-extern crate rlp;
 extern crate test;
 
 use primitives::U256;

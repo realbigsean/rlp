@@ -15,6 +15,7 @@
 // along with Parity Ethereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use proc_macro2::{Span, TokenStream};
+use quote::quote;
 use syn;
 
 struct ParseQuotes {
@@ -64,7 +65,6 @@ pub fn impl_decodable(ast: &syn::DeriveInput) -> TokenStream {
     quote! {
         #[allow(non_upper_case_globals, unused_attributes, unused_qualifications)]
         const #dummy_const: () = {
-            extern crate rlp;
             #impl_block
         };
     }
@@ -104,7 +104,6 @@ pub fn impl_decodable_wrapper(ast: &syn::DeriveInput) -> TokenStream {
     quote! {
         #[allow(non_upper_case_globals, unused_attributes, unused_qualifications)]
         const #dummy_const: () = {
-            extern crate rlp;
             #impl_block
         };
     }

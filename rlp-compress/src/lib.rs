@@ -6,10 +6,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#[macro_use]
-extern crate lazy_static;
-extern crate rlp;
-
 mod common;
 
 use common::{BLOCKS_SWAPPER, SNAPSHOT_SWAPPER};

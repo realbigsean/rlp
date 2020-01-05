@@ -7,13 +7,9 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-extern crate primitives;
-extern crate rlp;
-#[macro_use]
-extern crate hex_literal;
-
 use std::{cmp, fmt};
 
+use hex_literal::hex;
 use primitives::{H160, U256};
 use rlp::{Decodable, DecoderError, Encodable, Rlp, RlpStream};
 

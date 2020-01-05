@@ -1,5 +1,5 @@
 // Copyright 2015-2017 Parity Technologies
-// Copyright 2019 Kodebox, Inc.
+// Copyright 2019-2020 Kodebox, Inc.
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -33,9 +33,6 @@
 //! * You want to get view onto rlp-slice.
 //! * You don't want to decode whole rlp at once.
 
-extern crate primitives;
-extern crate rustc_hex;
-
 mod error;
 mod impls;
 mod rlpin;
@@ -57,8 +54,6 @@ pub const EMPTY_LIST_RLP: [u8; 1] = [0xC0; 1];
 /// Shortcut function to decode trusted rlp
 ///
 /// ```rust
-/// extern crate rlp;
-///
 /// fn main () {
 /// 	let data = vec![0x83, b'c', b'a', b't'];
 /// 	let animal: String = rlp::decode(&data).expect("could not decode");
@@ -82,8 +77,6 @@ where
 /// Shortcut function to encode structure into rlp.
 ///
 /// ```rust
-/// extern crate rlp;
-///
 /// fn main () {
 /// 	let animal = "cat";
 /// 	let out = rlp::encode(&animal);
