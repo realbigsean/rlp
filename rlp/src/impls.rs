@@ -7,14 +7,12 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::iter::{empty, once};
-use std::{cmp, mem, str};
-
-use primitives::{H128, H160, H256, H512, H520, U256};
-
 use super::stream::RlpStream;
 use super::traits::{Decodable, Encodable};
 use super::{DecoderError, Rlp};
+use primitives::{H128, H160, H256, H512, H520, U256};
+use std::iter::{empty, once};
+use std::{cmp, mem, str};
 
 pub fn decode_usize(bytes: &[u8]) -> Result<usize, DecoderError> {
     let expected = mem::size_of::<usize>();

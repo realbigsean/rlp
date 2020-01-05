@@ -7,11 +7,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::{cmp, fmt};
-
 use hex_literal::hex;
 use primitives::{H160, U256};
 use rlp::{Decodable, DecoderError, Encodable, Rlp, RlpStream};
+use std::{cmp, fmt};
 
 #[test]
 fn rlp_at() {

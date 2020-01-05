@@ -39,10 +39,9 @@ mod rlpin;
 mod stream;
 mod traits;
 
-use std::borrow::Borrow;
-
 pub use error::DecoderError;
 pub use rlpin::{PayloadInfo, Prototype, Rlp, RlpIterator};
+use std::borrow::Borrow;
 pub use stream::RlpStream;
 pub use traits::{Decodable, Encodable};
 

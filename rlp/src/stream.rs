@@ -7,9 +7,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::borrow::Borrow;
-
 use super::traits::Encodable;
+use std::borrow::Borrow;
 
 #[derive(Debug, Copy, Clone)]
 struct ListInfo {
