@@ -14,11 +14,11 @@ use std::cmp;
 use std::collections::HashMap;
 
 pub fn snapshot_swapper() -> &'static Swapper<'static> {
-    &SNAPSHOT_SWAPPER as &Swapper
+    &SNAPSHOT_SWAPPER as &Swapper<'_>
 }
 
 pub fn blocks_swapper() -> &'static Swapper<'static> {
-    &BLOCKS_SWAPPER as &Swapper
+    &BLOCKS_SWAPPER as &Swapper<'_>
 }
 
 /// A trait used to compress rlp.
@@ -53,7 +53,7 @@ pub fn decompress(c: &[u8], swapper: &dyn Decompressor) -> Vec<u8> {
     }
 }
 
-fn map_rlp<F: Fn(&Rlp) -> Vec<u8>>(rlp: &Rlp, f: F) -> Vec<u8> {
+fn map_rlp<F: Fn(&Rlp<'_>) -> Vec<u8>>(rlp: &Rlp<'_>, f: F) -> Vec<u8> {
     let mut stream = RlpStream::new_list(rlp.item_count().unwrap_or_default());
     for subrlp in rlp.iter() {
         stream.append_raw(&f(&subrlp), 1);
