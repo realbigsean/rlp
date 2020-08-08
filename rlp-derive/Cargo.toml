@@ -1,6 +1,6 @@
 [package]
 name = "rlp_derive"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["debris <marek.kotewicz@gmail.com>"]
 edition = "2018"
 
@@ -14,4 +14,4 @@ quote = "0.6"
 proc-macro2 = "0.4"
 
 [dev-dependencies]
-rlp = { git = "https://github.com/CodeChain-io/rlp.git", version = "0.4" }
+rlp = { path = "../rlp", version = "0.5" }

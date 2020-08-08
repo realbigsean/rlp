@@ -214,7 +214,7 @@ macro_rules! impl_encodable_for_hash {
     ($name: ident) => {
         impl Encodable for $name {
             fn rlp_append(&self, s: &mut RlpStream) {
-                s.encoder().encode_value(self);
+                s.encoder().encode_value(self.as_ref());
             }
         }
     };
@@ -396,8 +396,8 @@ mod tests {
         };
         let hash: H256 = {
             let mut hash = H256::zero();
-            assert_eq!(32, hash.iter().len());
-            for (i, h) in hash.iter_mut().enumerate().take(32) {
+            assert_eq!(32, hash.as_mut().iter().len());
+            for (i, h) in hash.as_mut().iter_mut().enumerate().take(32) {
                 *h = i as u8;
             }
             hash
@@ -418,8 +418,8 @@ mod tests {
         let slice: &[u8] = &array;
         let hash: H256 = {
             let mut hash = H256::zero();
-            assert_eq!(32, hash.iter().len());
-            for (i, h) in hash.iter_mut().enumerate().take(32) {
+            assert_eq!(32, hash.as_ref().iter().len());
+            for (i, h) in hash.as_mut().iter_mut().enumerate().take(32) {
                 *h = i as u8;
             }
             hash
