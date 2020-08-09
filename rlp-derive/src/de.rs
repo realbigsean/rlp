@@ -16,7 +16,6 @@
 
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn;
 
 struct ParseQuotes {
     single: TokenStream,
