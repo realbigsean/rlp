@@ -10,7 +10,7 @@
 use super::stream::RlpStream;
 use super::traits::{Decodable, Encodable};
 use super::{DecoderError, Rlp};
-use primitives::{H128, H160, H256, H512, H520, U256};
+use bigint::{H128, H160, H256, H512, H520, U256};
 use std::iter::{empty, once};
 use std::{cmp, mem, str};
 

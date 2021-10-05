@@ -32,6 +32,7 @@
 //! * You are working on input data.
 //! * You want to get view onto rlp-slice.
 //! * You don't want to decode whole rlp at once.
+extern crate ethereum_types as bigint;
 
 mod error;
 mod impls;
